@@ -14,7 +14,7 @@ public class Robot extends TimedRobot {
   private static final int leftDeviceID = 11; 
   //private static final int rightDeviceID = 26;
   private SparkMax m_leftMotor;
-  private SparkMax m_rightMotor;
+  //private CANSparkMax m_rightMotor;
 
   @Override
   public void robotInit() {
@@ -52,6 +52,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
    // m_myRobot.tankDrive(m_leftStick.getY(), m_leftStick.getX());
-   System.out.println("HELLO");
+   double y = m_leftStick.getY();
+   m_leftMotor.set(Math.abs(y));
+   System.out.println("HELLO" + y);
   }
 }
