@@ -1,16 +1,22 @@
 package frc.robot;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.hardware.CANcoder;
+
+import java.time.Instant;
 
 public class Robot extends TimedRobot {
   private DifferentialDrive m_myRobot;
   private Joystick m_leftStick;
   private Joystick m_rightStick;
+  private CANcoder can12 = null;
   private static final int leftDeviceID = 11; 
   //private static final int rightDeviceID = 26;
   private SparkMax m_leftMotor;
@@ -47,13 +53,23 @@ public class Robot extends TimedRobot {
     m_leftStick = new Joystick(0);
     //m_rightStick = new Joystick(1);
     //m_rightStick.get
+
+    can12 = new CANcoder(12);
   }
 
   @Override
   public void teleopPeriodic() {
-   // m_myRobot.tankDrive(m_leftStick.getY(), m_leftStick.getX());
-   double y = m_leftStick.getY();
-   m_leftMotor.set(Math.abs(y));
-   System.out.println("HELLO" + y);
+      double y = m_leftStick.getY();
+      m_leftMotor.set(Math.abs(y));
+      StatusSignal<Angle> absPos = can12.getAbsolutePosition();
+      double valueAsDouble = absPos.getValueAsDouble();
+      Angle value = absPos.getValue();
+      double baseUnitMagnitude = value.baseUnitMagnitude();
+
+      Instant now = Instant.now(); // Get the current instant
+      long epochSeconds = now.getEpochSecond(); // Get epoch seconds
+      if ( (epochSeconds % 3) == 0) {
+        System.out.println("HELLO" + y + " angle: " + valueAsDouble + " bm: " + baseUnitMagnitude );
+      }
   }
 }
